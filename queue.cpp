@@ -16,6 +16,7 @@ template <class T>
 void Queue<T>::Enqueue(T const& item)
 {
   // complete your implementation below
+  stack_1.Push(item);
   
 }
 
@@ -33,8 +34,8 @@ T Queue<T>::Dequeue()
 {
   // complete your implementation below
   
-  T item;      // REPLACE THESE LINES
-  return item; // REPLACE THESE LINES
+  Peek();
+  return stack_2.Pop(); 
 }
 
 /*
@@ -48,6 +49,7 @@ void Queue<T>::Add(const T& item)
   // complete your implementation below
   // Hint: this function should call a Queue
   //  function to add the element to the Queue.
+  Enqueue(item);
   
 }
 
@@ -64,8 +66,7 @@ T Queue<T>::Remove()
   // function to remove an element from the Queue and return it. You will
   // need to replace the following line.
   
-  T item;      // REPLACE THESE LINES
-  return item; // REPLACE THESE LINES
+  return Dequeue();
 }
 
 /*
@@ -84,9 +85,15 @@ T Queue<T>::Peek()
 {
   // complete your implementation below
   
-  T item;      // REPLACE THESE LINES
-  return item; // REPLACE THESE LINES
+  if (stack_2.IsEmpty()) {
+    while (!stack_1.IsEmpty()) {
+      stack_2.Push(stack_1.Pop());
+    }
+  }
+  return stack_2.Peek();
 }
+  
+
 
 /*
 *  Determines if the Queue is empty.
@@ -101,5 +108,5 @@ bool Queue<T>::IsEmpty() const
 {
   // complete your implementation below
   
-  return true; // REPLACE THIS STUB
+  return stack_1.IsEmpty() && stack_2.IsEmpty();
 }
