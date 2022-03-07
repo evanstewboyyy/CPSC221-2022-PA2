@@ -23,18 +23,19 @@ using namespace std;
 *  Default constructor
 *  Initializes refcolor to the default color according to the HSLAPixel implementation.
 */
-PriorityNeighbours::PriorityNeighbours() {
-  // complete your implementation below
-  
+PriorityNeighbours::PriorityNeighbours() 
+{
+  HSLAPixel *pixel = new HSLAPixel();
+  refcolor = *pixel;
 }
 
 /*
 *  Parameterized constructor
 *  Initializes refcolor to the supplied value.
 */
-PriorityNeighbours::PriorityNeighbours(HSLAPixel ref) {
-  // complete your implementation below
-  
+PriorityNeighbours::PriorityNeighbours(HSLAPixel ref) 
+{
+  refcolor = ref; 
 }
 
 /*
@@ -42,9 +43,9 @@ PriorityNeighbours::PriorityNeighbours(HSLAPixel ref) {
 *  PARAM: p - item to be inserted
 *  POST:  the collection contains p, along with all previously existing items.
 */
-void PriorityNeighbours::Insert(PixelPoint p) {
-  // complete your implementation below
-  
+void PriorityNeighbours::Insert(PixelPoint p) 
+{
+  points.push_back(p); 
 }
 
 /*
@@ -68,10 +69,107 @@ void PriorityNeighbours::Insert(PixelPoint p) {
 *  Combined with Insert(), think about the time complexity of maintaining the
 *  priority order and/or accessing the priority element in this specific application!
 */
-PixelPoint PriorityNeighbours::Remove() {
-  // complete your implementation below
-  
-  return PixelPoint(); // REPLACE THIS STUB
+PixelPoint PriorityNeighbours::Remove() 
+{
+  double min;
+
+  for(int i = 0; i < points.size(); i++)
+  {
+    if(i == 0)
+    {
+      min = refcolor.dist(points[i].color);
+    }
+    if(refcolor.dist(points[i].color) < min)
+    {
+      min = refcolor.dist(points[i].color);
+    }
+  }
+
+  vector<PixelPoint> pointEQdist;
+  vector<int> EQDindexes;
+
+  for(int i = 0; i < points.size(); i++)
+  {
+    if(refcolor.dist(points[i].color) == min)
+    {
+      pointEQdist.push_back(points[i]);
+      EQDindexes.push_back(i);
+    }
+  }
+
+  if(pointEQdist.size() == 1)
+  {
+    PixelPoint temp = points[points.size() - 1];
+    points[points.size() - 1] = pointEQdist[0];
+    points[EQDindexes[0]] = temp;
+    points.pop_back();
+
+    return pointEQdist[0];
+  }
+
+  unsigned int miny;
+
+  for(int i = 0; i < pointEQdist.size(); i++)
+  {
+    if(i == 0)
+    {
+      miny = pointEQdist[i].y;
+    }
+    if(pointEQdist[i].y < miny)
+    {
+      miny = pointEQdist[i].y;
+    }
+  }
+
+  vector<PixelPoint> pointEQy;
+  vector<int> EQYindexes;
+
+  for(int i = 0; i < pointEQdist.size(); i++)
+  {
+    if(pointEQdist[i].y == miny)
+    {
+      pointEQy.push_back(pointEQdist[i]);
+      EQYindexes.push_back(EQDindexes[i]);
+    }
+  }
+
+  if(pointEQy.size() == 1)
+  {
+    PixelPoint temp = points[points.size() - 1];
+    points[points.size() - 1] = pointEQy[0];
+    points[EQYindexes[0]] = temp;
+    points.pop_back();
+
+    return pointEQy[0];
+  }
+
+  unsigned int minx;
+  int index = 0;
+  int pointsInd = 0;
+
+  for(int i = 0; i < pointEQy.size(); i++)
+  {
+    if(i == 0)
+    {
+      minx = pointEQy[i].x;
+      index = i;
+      pointsInd = EQYindexes[i];
+    }
+    if(pointEQdist[i].x < minx)
+    {
+      minx = pointEQy[i].x;
+      index = i;
+      pointsInd = EQYindexes[i];
+    }
+  }
+
+  PixelPoint temp = points[points.size() - 1];
+  points[points.size() - 1] = pointEQy[index];
+  points[pointsInd] = temp;
+  points.pop_back();
+
+  return pointEQy[index];
+
 }
 
 /*
@@ -79,26 +177,29 @@ PixelPoint PriorityNeighbours::Remove() {
 *  RETURN: true, if the collection is empty
 *          false, otherwise
 */
-bool PriorityNeighbours::IsEmpty() const {
-  // complete your implementation below
+bool PriorityNeighbours::IsEmpty() const 
+{
+  if(points.size() == 0)
+  {
+    return true;
+  }
   
-  return true; // REPLACE THIS STUB
+  return false; 
 }
 
 /*
 *  Returns the value of the reference color
 */
-HSLAPixel PriorityNeighbours::GetReferenceColor() const {
-  // complete your implementation below
-  
-  return HSLAPixel(); // REPLACE THIS STUB
+HSLAPixel PriorityNeighbours::GetReferenceColor() const 
+{ 
+  return refcolor; 
 }
 
 /*
 *  Sets the reference color attribute
 *  POST: refcolor is set to the supplied value
 */
-void PriorityNeighbours::SetReferenceColor(HSLAPixel ref) {
-  // complete your implementation below
-  
+void PriorityNeighbours::SetReferenceColor(HSLAPixel ref) 
+{
+  refcolor = ref;  
 }
