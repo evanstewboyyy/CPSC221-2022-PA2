@@ -133,7 +133,6 @@ template <template <class T> class OrderingStructure> animation filler::Fill(Fil
 
     if(currP.x < img.width() - 1 && checked[currP.x + 1][currP.y] == false)
     {
-      // std::cout << "Right" << std::endl;
       HSLAPixel col = *(img.getPixel(currP.x + 1, currP.y));
       double dist = col.dist(seedP.color);
       PixelPoint pix = *(new PixelPoint(currP.x + 1, currP.y, col));
@@ -144,7 +143,6 @@ template <template <class T> class OrderingStructure> animation filler::Fill(Fil
     }
     if(currP.y < img.height() - 1  && checked[currP.x][currP.y + 1] == false)
     {
-      // std::cout << "Down" << std::endl;
       HSLAPixel col = *(img.getPixel(currP.x, currP.y + 1));
       double dist = col.dist(seedP.color);
       PixelPoint pix = *(new PixelPoint(currP.x, currP.y + 1, col));
@@ -155,7 +153,6 @@ template <template <class T> class OrderingStructure> animation filler::Fill(Fil
     }
     if(currP.x > 0  && checked[currP.x - 1][currP.y] == false)
     {
-      // std::cout << "Left" << std::endl;
       HSLAPixel col = *(img.getPixel(currP.x - 1, currP.y));
       double dist = col.dist(seedP.color);
       PixelPoint pix = *(new PixelPoint(currP.x - 1, currP.y, col));
@@ -166,7 +163,6 @@ template <template <class T> class OrderingStructure> animation filler::Fill(Fil
     }
     if(currP.y > 0  && checked[currP.x][currP.y - 1] == false)
     {
-      // std::cout << "Up" << std::endl;
       HSLAPixel col = *(img.getPixel(currP.x, currP.y - 1));
       double dist = col.dist(seedP.color);
       PixelPoint pix = *(new PixelPoint(currP.x, currP.y - 1, col));
