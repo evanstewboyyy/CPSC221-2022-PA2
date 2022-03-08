@@ -26,13 +26,74 @@ double PointDistance(PixelPoint a, PixelPoint b) {
 
 CensorColorPicker::CensorColorPicker(unsigned int b_width, PixelPoint ctr, unsigned int rad, PNG& inputimage)
 {
-  // complete your implementation below
-  
+  blockwidth = b_width;
+  center = ctr;
+  radius = rad;
+  img = inputimage;
+
+  blockyimg = *(new PNG(ceil(img.width() / blockwidth), (ceil(img.height() / blockwidth))));
+
+  for(unsigned int i = 0; i <= blockyimg.width(); i += 1) //go through each "block"
+  {
+    for(unsigned int j = 0; j < blockyimg.height(); j += 1)
+    {
+      //fill each block
+      double totalH = 0;
+      double totalS = 0;
+      double totalL = 0;
+      double totalA = 0;
+
+      int count = 0;
+
+      for(unsigned int x = (blockwidth * i); x < ((i + 1) * blockwidth); x++)
+      {
+        for(unsigned int y = (blockwidth * j); y < ((j + 1) * blockwidth); y++)
+        {
+          count++;
+
+          if(x < img.width() && y < img.height())
+          {
+            HSLAPixel color = *(img.getPixel(x, y));
+            totalH += color.h;
+            totalS += color.s;
+            totalL += color.l;
+            totalA += color.a;
+          }
+          else
+          {
+            count--;
+          }
+        }
+      }
+
+      double avgH = totalH / count;
+      double avgS = totalS / count;
+      double avgL = totalL / count;
+      double avgA = totalA / count;
+
+      HSLAPixel *bkCol = blockyimg.getPixel(i, j);
+      bkCol->h = avgH;
+      bkCol->s = avgS;
+      bkCol->l = avgL;
+      bkCol->a = avgA;
+    }
+  }
 }
 
 HSLAPixel CensorColorPicker::operator()(PixelPoint p)
 {
-  // complete your implementation below
+  double distance = PointDistance(p, center);
+
+  if(distance <= radius)
+  {
+    unsigned int i = p.x / blockwidth;
+    unsigned int j = p.y / blockwidth;
+
+    return *(blockyimg.getPixel(i, j));
+  }
+  else
+  {
+    return *(img.getPixel(p.x, p.y));
+  }
   
-  return HSLAPixel(); // REPLACE THIS STUB
 }
