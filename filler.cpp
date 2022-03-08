@@ -14,7 +14,7 @@ animation filler::FillBFS(FillerConfig& config) {
   // complete your implementation below
   // You should replace the following line with a
   // correct call to fill.
-  return animation(); // REPLACE THIS STUB
+  return Fill<Queue>(config);
 }
 
 /*
@@ -27,7 +27,7 @@ animation filler::FillDFS(FillerConfig& config) {
   // complete your implementation below
   // You should replace the following line with a
   // correct call to fill.
-  return animation(); // REPLACE THIS STUB
+  return Fill<Stack>(config);
 }
 
 /*
@@ -104,7 +104,99 @@ template <template <class T> class OrderingStructure> animation filler::Fill(Fil
   // complete your implementation below
   // HINT: you will likely want to declare some kind of structure to track
   //       which pixels have already been visited
-  
+
+  PNG img = config.img;
+  PixelPoint seedP = config.seedpoint;
+  int ff = config.frameFreq;
+  double tol = config.tolerance;
+  config.neighbourorder = *(new PriorityNeighbours(seedP.color));
+
+  bool checked[1000][1000] = { { false } };
+
+  os.Add(seedP);
+  HSLAPixel pChange = (*config.picker)(seedP);
+  img.getPixel(seedP.x, seedP.y)->h = pChange.h;
+  img.getPixel(seedP.x, seedP.y)->s = pChange.s;
+  img.getPixel(seedP.x, seedP.y)->l = pChange.l;
+  img.getPixel(seedP.x, seedP.y)->a = pChange.a;
+  framecount++;
+  checked[seedP.x][seedP.y] = true;
+
+  if(ff == 1)
+  {
+    anim.addFrame(img);
+  }
+
+  while(!os.IsEmpty())
+  {
+    PixelPoint currP = os.Remove();
+
+    if(currP.x < img.width() - 1 && checked[currP.x + 1][currP.y] == false)
+    {
+      // std::cout << "Right" << std::endl;
+      HSLAPixel col = *(img.getPixel(currP.x + 1, currP.y));
+      double dist = col.dist(seedP.color);
+      PixelPoint pix = *(new PixelPoint(currP.x + 1, currP.y, col));
+      if(dist <= tol)
+      {
+        config.neighbourorder.Insert(pix);
+      }
+    }
+    if(currP.y < img.height() - 1  && checked[currP.x][currP.y + 1] == false)
+    {
+      // std::cout << "Down" << std::endl;
+      HSLAPixel col = *(img.getPixel(currP.x, currP.y + 1));
+      double dist = col.dist(seedP.color);
+      PixelPoint pix = *(new PixelPoint(currP.x, currP.y + 1, col));
+      if(dist <= tol)
+      {
+        config.neighbourorder.Insert(pix);
+      }
+    }
+    if(currP.x > 0  && checked[currP.x - 1][currP.y] == false)
+    {
+      // std::cout << "Left" << std::endl;
+      HSLAPixel col = *(img.getPixel(currP.x - 1, currP.y));
+      double dist = col.dist(seedP.color);
+      PixelPoint pix = *(new PixelPoint(currP.x - 1, currP.y, col));
+      if(dist <= tol)
+      {
+        config.neighbourorder.Insert(pix);
+      }
+    }
+    if(currP.y > 0  && checked[currP.x][currP.y - 1] == false)
+    {
+      // std::cout << "Up" << std::endl;
+      HSLAPixel col = *(img.getPixel(currP.x, currP.y - 1));
+      double dist = col.dist(seedP.color);
+      PixelPoint pix = *(new PixelPoint(currP.x, currP.y - 1, col));
+      if(dist <= tol)
+      {
+        config.neighbourorder.Insert(pix);
+      }
+    }
+
+    while(!config.neighbourorder.IsEmpty())
+    {
+      PixelPoint pix = config.neighbourorder.Remove();
+
+      checked[pix.x][pix.y] = true;
+      os.Add(pix);
+      HSLAPixel pixChange = (*config.picker)(pix);
+      img.getPixel(pix.x, pix.y)->h = pixChange.h;
+      img.getPixel(pix.x, pix.y)->s = pixChange.s;
+      img.getPixel(pix.x, pix.y)->l = pixChange.l;
+      img.getPixel(pix.x, pix.y)->a = pixChange.a;
+      framecount++;
+
+      if(framecount % ff == 0)
+      {
+        anim.addFrame(img);
+      }
+    }
+  }
+
+  anim.addFrame(img);
 
   return anim;
 }
