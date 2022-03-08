@@ -33,7 +33,7 @@ CensorColorPicker::CensorColorPicker(unsigned int b_width, PixelPoint ctr, unsig
 
   blockyimg = *(new PNG(ceil(img.width() / blockwidth), (ceil(img.height() / blockwidth))));
 
-  for(unsigned int i = 0; i <= blockyimg.width(); i += 1) //go through each "block"
+  for(unsigned int i = 0; i < blockyimg.width(); i += 1) //go through each "block"
   {
     for(unsigned int j = 0; j < blockyimg.height(); j += 1)
     {
